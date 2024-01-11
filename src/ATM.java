@@ -69,39 +69,57 @@ public class ATM {
                     System.out.print("How much money would you like to withdraw(has to be multiple of 5)?");
                     withdrawAmount = scan.nextDouble();
                     if (savings.getBalance() - withdrawAmount < 0) {
-                        System.out.println("insufficient funds!");
+                        System.out.println("Transaction failed due to insufficient funds. No money was withdrawed.");
+                        System.out.println(TransactionHistory.newTransactionID());
                     } else if (withdrawAmount % 5 == 0) {
                         System.out.print("How many of these bills would you like in 20s?");
                         int numberOfTwenties = scan.nextInt();
                         scan.nextLine();
                         if (numberOfTwenties * 20 > withdrawAmount) {
                             System.out.println("This amount of $20 bills exceeds the amount that you are trying to withdraw.");
+                            System.out.println("Transaction failed due to insufficient funds. No money was withdrawed.");
+                            System.out.println(TransactionHistory.newTransactionID());
                         } else {
                             int numberOfFives = (int) ((withdrawAmount - numberOfTwenties * 20) % 5);
                             System.out.println("Here are " + numberOfTwenties + " twenties and " +  numberOfFives + " fives");
                             savings.changeBalance(-withdrawAmount);
+                            System.out.println("Transaction successful!");
+                            System.out.println("Withdrawed $" + withdrawAmount + " from savings");
+                            System.out.println(TransactionHistory.newTransactionID());
+                            getBalances();
                         }
                     } else {
                         System.out.println("Please enter an amount of money that is a multiple of 5!");
+                        System.out.println("Transaction failed due to insufficient funds. No money was withdrawed.");
+                        System.out.println(TransactionHistory.newTransactionID());
                     }
                 } else if (account.equalsIgnoreCase("c")) {
                     System.out.print("How much money would you like to withdraw(has to be multiple of 5)?");
                     withdrawAmount = scan.nextDouble();
                     if (checking.getBalance() - withdrawAmount < 0) {
-                        System.out.println("You don't have that much money in your account!");
+                        System.out.println("Transaction failed due to insufficient funds. No money was withdrawed.");
+                        System.out.println(TransactionHistory.newTransactionID());
                     } else if (withdrawAmount % 5 == 0) {
                         System.out.print("How many of these bills would you like in 20s?");
                         int numberOfTwenties = scan.nextInt();
                         scan.nextLine();
                         if (numberOfTwenties * 20 > withdrawAmount) {
                             System.out.println("This amount of $20 bills exceeds the amount that you are trying to withdraw.");
+                            System.out.println("Transaction failed due to insufficient funds. No money was withdrawed.");
+                            System.out.println(TransactionHistory.newTransactionID());
                         } else {
                             int numberOfFives = (int) ((withdrawAmount - numberOfTwenties * 20) % 5);
                             System.out.println("Here are " + numberOfTwenties + " twenties and " +  numberOfFives + " fives");
                             checking.changeBalance(-withdrawAmount);
+                            System.out.println("Transaction successful!");
+                            System.out.println("Withdrawed $" + withdrawAmount + " from checking");
+                            System.out.println(TransactionHistory.newTransactionID());
+                            getBalances();
                         }
                     } else {
                         System.out.println("Please enter an amount of money that is a multiple of 5!");
+                        System.out.println("Transaction failed due to insufficient funds. No money was withdrawed.");
+                        System.out.println(TransactionHistory.newTransactionID());
                     }
                 } else {
                     System.out.println("Invalid option. Choose either s for savings or c for checking.");
@@ -111,7 +129,11 @@ public class ATM {
                 account = scan.nextLine();
                 if (account.equalsIgnoreCase("s")) {
                     System.out.println("Enter deposit amount: ");
-                    savings.changeBalance(scan.nextDouble());
+                    double depositAmount = scan.nextDouble();
+                    savings.changeBalance(depositAmount);
+                    System.out.println("Transaction successful. $" + depositAmount + " deposited into savings account.");
+                    System.out.println(TransactionHistory.newTransactionID());
+
                 } else if (account.equalsIgnoreCase("c")) {
                     System.out.println("Enter deposit amount: ");
                     checking.changeBalance(scan.nextDouble());
@@ -147,7 +169,7 @@ public class ATM {
                     System.out.println("Invalid option. Choose either s for savings or c for checking.");
                 }
             } else if (option == 4) {
-                System.out.println(savings.getAccountType() + ": " + savings.getBalance() + ", " + checking.getAccountType() + ": " + checking.getBalance());
+                getBalances();
             } else if (option == 5) {
 
             } else if (option == 6) {
@@ -167,6 +189,10 @@ public class ATM {
 
             }
         }
+    }
+
+    private void getBalances() {
+        System.out.println(savings.getAccountType() + ": " + savings.getBalance() + ", " + checking.getAccountType() + ": " + checking.getBalance());
     }
 
     private void next() {
