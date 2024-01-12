@@ -41,7 +41,6 @@ public class ATM {
             scan.nextInt();
         }
         System.out.println("Login successful!");
-        next();
     }
     
     public void mainMenu() {
@@ -50,6 +49,14 @@ public class ATM {
         double withdrawAmount = 0;
         while (option != 7) {
             next();
+            System.out.print("Enter your PIN to continue: ");
+            int answer = scan.nextInt();
+            scan.nextLine();
+            while (answer != customer.getPIN()) {
+                System.out.print("Wrong pin, try again.");
+                scan.nextInt();
+                scan.nextLine();
+            }
             System.out.println("1. Withdraw money");
             System.out.println("2. Deposit money");
             System.out.println("3. Transfer money between accounts");
@@ -70,6 +77,7 @@ public class ATM {
                     withdrawAmount = scan.nextDouble();
                     if (savings.getBalance() - withdrawAmount < 0) {
                         System.out.println("Transaction failed due to insufficient funds. No money was withdrawed.");
+                        TransactionHistory.addToHistory("Transaction failed due to insufficient funds. No money was withdrawed.");
                         System.out.println(TransactionHistory.newTransactionID());
                     } else if (withdrawAmount % 5 == 0) {
                         System.out.print("How many of these bills would you like in 20s?");
@@ -78,6 +86,7 @@ public class ATM {
                         if (numberOfTwenties * 20 > withdrawAmount) {
                             System.out.println("This amount of $20 bills exceeds the amount that you are trying to withdraw.");
                             System.out.println("Transaction failed due to insufficient funds. No money was withdrawed.");
+                            TransactionHistory.addToHistory("Transaction failed due to insufficient funds. No money was withdrawed.");
                             System.out.println(TransactionHistory.newTransactionID());
                         } else {
                             int numberOfFives = (int) ((withdrawAmount - numberOfTwenties * 20) % 5);
@@ -85,13 +94,15 @@ public class ATM {
                             savings.changeBalance(-withdrawAmount);
                             System.out.println("Transaction successful!");
                             System.out.println("Withdrawed $" + withdrawAmount + " from savings");
+                            TransactionHistory.addToHistory("Withdrawed $" + withdrawAmount + " from savings");
                             System.out.println(TransactionHistory.newTransactionID());
                             getBalances();
                         }
                     } else {
                         System.out.println("Please enter an amount of money that is a multiple of 5!");
-                        System.out.println("Transaction failed due to insufficient funds. No money was withdrawed.");
+                        System.out.println("Transaction failed due invalid option. No money was withdrawed.");
                         System.out.println(TransactionHistory.newTransactionID());
+                        TransactionHistory.addToHistory("Transaction failed due invalid option. No money was withdrawed.");
                     }
                 } else if (account.equalsIgnoreCase("c")) {
                     System.out.print("How much money would you like to withdraw(has to be multiple of 5)?");
@@ -105,20 +116,23 @@ public class ATM {
                         scan.nextLine();
                         if (numberOfTwenties * 20 > withdrawAmount) {
                             System.out.println("This amount of $20 bills exceeds the amount that you are trying to withdraw.");
-                            System.out.println("Transaction failed due to insufficient funds. No money was withdrawed.");
+                            System.out.println("Transaction failed due to invalid option. No money was withdrawed.");
                             System.out.println(TransactionHistory.newTransactionID());
+                            TransactionHistory.addToHistory("Transaction failed due invalid option. No money was withdrawed.");
                         } else {
                             int numberOfFives = (int) ((withdrawAmount - numberOfTwenties * 20) % 5);
                             System.out.println("Here are " + numberOfTwenties + " twenties and " +  numberOfFives + " fives");
                             checking.changeBalance(-withdrawAmount);
                             System.out.println("Transaction successful!");
                             System.out.println("Withdrawed $" + withdrawAmount + " from checking");
+                            TransactionHistory.addToHistory("Withdrawed $" + withdrawAmount + " from savings");
                             System.out.println(TransactionHistory.newTransactionID());
                             getBalances();
                         }
                     } else {
                         System.out.println("Please enter an amount of money that is a multiple of 5!");
                         System.out.println("Transaction failed due to insufficient funds. No money was withdrawed.");
+                        TransactionHistory.addToHistory("Transaction failed due to insufficient funds. No money was withdrawed.");
                         System.out.println(TransactionHistory.newTransactionID());
                     }
                 } else {
@@ -148,45 +162,54 @@ public class ATM {
                     double transferAmount = scan.nextDouble();
                     scan.nextLine();
                     if (savings.getBalance() < transferAmount) {
-                        System.out.println("insufficient funds!");
+                        System.out.println("Transaction failed due to insufficient funds. No money was withdrawed.");
+                        System.out.println(TransactionHistory.newTransactionID());
                     } else {
                         savings.changeBalance(-transferAmount);
                         checking.changeBalance(transferAmount);
                         System.out.println("Transaction successful! " +transferAmount+ " transferred from savings account to checking account");
+                        System.out.println(TransactionHistory.newTransactionID());
                     }
                 } else if (account.equalsIgnoreCase("c")) {
                     System.out.println("Enter transfer amount: ");
                     double transferAmount = scan.nextDouble();
                     scan.nextLine();
                     if (checking.getBalance() < transferAmount) {
-                        System.out.println("insufficient funds!");
+                        System.out.println("Transaction failed due to insufficient funds. No money was withdrawed.");
+                        System.out.println(TransactionHistory.newTransactionID());
                     } else {
                         checking.changeBalance(-transferAmount);
                         savings.changeBalance(transferAmount);
                         System.out.println("Transaction successful! " + transferAmount + " transferred from checking account to savings account");
+                        System.out.println(TransactionHistory.newTransactionID());
                     }
                 } else {
                     System.out.println("Invalid option. Choose either s for savings or c for checking.");
                 }
             } else if (option == 4) {
+                System.out.println(TransactionHistory.newSecurityID());
                 getBalances();
             } else if (option == 5) {
-
+                TransactionHistory.getTransactionHistory();
             } else if (option == 6) {
                 int pin = 0;
                 System.out.println("Enter new pin: ");
                 pin = scan.nextInt();
                 if (String.valueOf(pin).length() != 4) {
-                    System.out.println("Please enter a 4 digit PIN.");
+                    System.out.println("Action failed. Please enter a 4 digit PIN.");
+                    System.out.println(TransactionHistory.newSecurityID());
+                } else if (pin == customer.getPIN()) {
+                    System.out.println("Action failed. Please enter a new 4 digit PIN.");
+                    System.out.println(TransactionHistory.newSecurityID());
                 } else {
-                    System.out.println("Pin successfully changed.");
+                    System.out.println("Action successful. Pin successfully changed.");
+                    System.out.println(TransactionHistory.newSecurityID());
                     customer.setPIN(pin);
                 }
             } else if (option == 7) {
                 System.out.println("Thank you for using the ATM service, goodbye!");
             } else {
                 System.out.println("Invalid option! Please enter a valid menu option!");
-
             }
         }
     }
