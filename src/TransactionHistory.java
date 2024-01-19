@@ -1,9 +1,8 @@
 import java.util.ArrayList;
-
 public class TransactionHistory {
-    private static ArrayList<String> messages = new ArrayList<>();
-    private static ArrayList<String> transactionNumber = new ArrayList<>();
-    private static ArrayList<String> securityNumber = new ArrayList<>();
+    private static final ArrayList<String> messages = new ArrayList<>();
+    private static final ArrayList<String> transactionNumber = new ArrayList<>();
+    private static final ArrayList<String> securityNumber = new ArrayList<>();
     private static int transactionOnes;
     private static int transactionTens;
     private static int transactionHundreds;
@@ -16,6 +15,7 @@ public class TransactionHistory {
     private TransactionHistory() {}
 
     public static String newTransactionID() {
+        // adds one to one's digit, and if any digit reaches 10, then it carries over to the next digit
         transactionOnes++;
         if (transactionOnes == 10) {
             transactionOnes = 0;
@@ -29,10 +29,11 @@ public class TransactionHistory {
             transactionHundreds = 0;
             transactionThousands++;
         }
-        String message = "A" + transactionThousands + transactionHundreds + transactionTens + transactionOnes;
-        messages.add(message);
+        // adds transaction number to history
+        String number = "A" + transactionThousands + transactionHundreds + transactionTens + transactionOnes;
+        messages.add(number);
         transactionNumber.add(String.valueOf(transactionThousands + transactionHundreds + transactionTens + transactionOnes));
-        return message;
+        return number;
     }
 
     public static String newSecurityID() {
@@ -49,10 +50,11 @@ public class TransactionHistory {
             securityHundreds = 0;
             securityThousands++;
         }
-        String message = "S" + securityThousands + securityHundreds + securityTens + securityOnes;
-        messages.add(message);
+        // adds security number to history
+        String number = "S" + securityThousands + securityHundreds + securityTens + securityOnes;
+        messages.add(number);
         securityNumber.add(String.valueOf(securityThousands + securityHundreds + securityTens + securityOnes));
-        return message;
+        return number;
     }
 
     public static void getTransactionHistory() {

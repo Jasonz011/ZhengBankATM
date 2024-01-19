@@ -16,9 +16,11 @@ public class Account {
     public String getAccountType() {
         return type;
     }
+
     public void changeBalance(double amount) {
         if (balance + amount >= 0) {
             balance += amount;
         }
     }
+
 }
